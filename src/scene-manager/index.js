@@ -7,8 +7,8 @@ import * as three from 'three';
 
 import vertShader from './shader/circle-vert.glsl';
 import fragShader from './shader/circle-frag.glsl';
-import lineVertShader from './shader/line-vert.glsl';
-import lineFragShader from './shader/line-frag.glsl';
+// import lineVertShader from './shader/line-vert.glsl';
+// import lineFragShader from './shader/line-frag.glsl';
 
 export class SceneManager {
   constructor ({el, dp}) {
@@ -45,12 +45,16 @@ export class SceneManager {
     let positions = [];
     let focus = [];
     let hidden = [];
+    // let edgeColors = [];
 
     this.linkIndex = {};
     for (let i = 0; i < this.dp.edgeCount(); i++) {
       const edgePos = this.dp.edgePosition(i);
       positions.push(edgePos[0].x, edgePos[0].y, -0.1);
       positions.push(edgePos[1].x, edgePos[1].y, -0.1);
+
+      // edgeColors.push(0.0, 0.0, 0.0, 0.01);
+      // edgeColors.push(0.0, 0.0, 0.0, 0.01);
 
       focus.push(1.0, 1.0);
 
@@ -61,18 +65,34 @@ export class SceneManager {
     this.edgeGeom.addAttribute('position', new three.Float32BufferAttribute(positions, 3).setDynamic(true));
     this.edgeGeom.addAttribute('focus', new three.Float32BufferAttribute(focus, 1).setDynamic(true));
     this.edgeGeom.addAttribute('hidden', new three.Float32BufferAttribute(hidden, 1).setDynamic(true));
+    // this.edgeGeom.addAttribute('color', new three.Float32BufferAttribute(edgeColors, 4).setDynamic(true));
     this.edgeGeom.computeBoundingSphere();
 
-    this.lineMaterial = new three.ShaderMaterial({
-      uniforms: {
-        opacity: {
-          value: 0.05
-        }
-      },
-      vertexShader: lineVertShader,
-      fragmentShader: lineFragShader
+    // this.lineMaterial = new three.ShaderMaterial({
+      // uniforms: {
+        // opacity: {
+          // value: 0.05
+        // }
+      // },
+      // vertexShader: lineVertShader,
+      // fragmentShader: lineFragShader
+    // });
+    // this.lineMaterial.transparent = true;
+
+    this.lineMaterial = new three.LineBasicMaterial({
+      color: 0x000000,
+      opacity: 0.05,
+      linewidth: 1,
+      // vertexColors: three.VertexColors
     });
     this.lineMaterial.transparent = true;
+
+    this.defocusMaterial = new three.LineBasicMaterial({
+      color: 0x000000,
+      opacity: 0.01,
+      lineWidth: 1,
+    });
+    this.defocusMaterial.transparent = true;
 
     this.lines = new three.LineSegments(this.edgeGeom, this.lineMaterial);
     this._linksVisible = true;
@@ -160,7 +180,7 @@ export class SceneManager {
   }
 
   setLinkOpacity (o) {
-    this.lineMaterial.uniforms.opacity.value = o;
+    // this.lineMaterial.uniforms.opacity.value = o;
   }
 
   setConstSize (s) {
